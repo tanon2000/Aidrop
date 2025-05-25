@@ -23,7 +23,7 @@ const config = getDefaultConfig({
   appName: 'Mon App Replit',
   projectId: 'f1a60317fced441abedbb07d7818e2ac',
   chains: [mainnet, polygon, optimism, arbitrum, base],
-  ssr: false, // Corrige les bugs de double init
+  ssr: false,
 });
 
 const queryClient = new QueryClient();
@@ -32,7 +32,7 @@ export default function MyApp({ Component, pageProps }) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider chains={config.chains}>
+        <RainbowKitProvider>
           <Component {...pageProps} />
         </RainbowKitProvider>
       </QueryClientProvider>
